@@ -22,16 +22,36 @@ namespace MiniETradeApp.Persistence.Repositories
 
         public DbSet<T> Table => _context.Set<T>();
 
-        public IQueryable<T> GetAll()
-            => Table;
+        public IQueryable<T> GetAll(bool traking = true)
+        {
+            var query=Table.AsQueryable();
+            if(!traking)
+                query=query.AsNoTracking();
+            return query;
+        }
 
-        public async Task<T> GetByIdAsync(string id)
-            => await Table.FirstOrDefaultAsync(entity => entity.Id == Guid.Parse(id));
+        public async Task<T> GetByIdAsync(string id, bool traking = true)
+        {
+            var query=Table.AsQueryable();
+            if(!traking)
+                query=query.AsNoTracking();
+            return await query.FirstOrDefaultAsync(x => x.Id == Guid.Parse(id));
+        }
 
-        public async Task<T> GetSingleAsync(Expression<Func<T, bool>> expression)
-            => await Table.FirstOrDefaultAsync(expression);
+        public async Task<T> GetSingleAsync(Expression<Func<T, bool>> expression, bool traking = true)
+        {
+            var query = Table.AsQueryable();
+            if (!traking)
+                query = query.AsNoTracking();
+            return await query.FirstOrDefaultAsync(expression);
+        }
 
-        public IQueryable<T> GetWhere(Expression<Func<T, bool>> expression)
-            => Table.Where(expression);
+        public IQueryable<T> GetWhere(Expression<Func<T, bool>> expression, bool traking = true)
+        {
+            var query = Table.Where(expression);
+            if (!traking)
+                query = query.AsNoTracking();
+            return query;
+        }
     }
 }
